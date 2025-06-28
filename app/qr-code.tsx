@@ -1,11 +1,13 @@
 // app/qr-code.tsx
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { RegisteredEventContext } from '../context/RegisteredEventContext';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 
 export default function QRCodeScreen() {
   const { registeredEvents } = useContext(RegisteredEventContext);
+  const router = useRouter();
   const latestEvent = registeredEvents[registeredEvents.length - 1];
 
   if (!latestEvent) {
@@ -32,6 +34,10 @@ export default function QRCodeScreen() {
         <Text style={styles.meta}>📅 {latestEvent.date}</Text>
         <Text style={styles.meta}>📍 {latestEvent.location}</Text>
       </View>
+
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/my-bookings')}>
+        <Text style={styles.buttonText}>Go to My Bookings</Text>
+      </TouchableOpacity>
     </LinearGradient>
   );
 }
@@ -81,5 +87,17 @@ const styles = StyleSheet.create({
     color: '#FFA726',
     fontSize: 18,
     textAlign: 'center',
+  },
+  button: {
+    marginTop: 30,
+    backgroundColor: '#FFA726',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 10,
+  },
+  buttonText: {
+    color: '#2C5364',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });

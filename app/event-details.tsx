@@ -140,7 +140,7 @@ export default function EventDetailsScreen() {
   const handleRegister = () => {
     registerEvent(event);
     Alert.alert('Registered', `You have registered for "${event.title}"`);
-    router.replace('/qr-code');
+    router.push('/qr-code');
   };
 
   return (
