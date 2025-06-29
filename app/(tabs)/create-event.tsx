@@ -1,5 +1,7 @@
-// app/create-event.tsx
-import React, { useState } from 'react';
+// app/(tabs)/create-event.tsx
+
+// React aur required hooks/components import kiye
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -11,23 +13,47 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+
+// Gradient background ke liye
 import { LinearGradient } from 'expo-linear-gradient';
 
+// Context jahan naye events store ho rahe hain
+import { CreatedEventContext } from '../../context/CreatedEventContext';
+
 export default function CreateEventScreen() {
+  // Form input fields ke liye local state define ki
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
   const [location, setLocation] = useState('');
   const [description, setDescription] = useState('');
 
+  // CreatedEventContext se addEvent method access kiya
+  const { addEvent } = useContext(CreatedEventContext);
+
+  // Button press pe event create karne wala function
   const handleCreate = () => {
+    // Agar koi field blank ho toh alert show karo
     if (!title || !date || !location || !description) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
 
-    Alert.alert('Event Created', `🎉 "${title}" has been created successfully!`);
+    // Naya event object create kiya
+    const newEvent = {
+      id: Date.now(), // unique id
+      title,
+      date,
+      location,
+      description,
+    };
 
-    // Reset form
+    // Context mein event add kiya
+    addEvent(newEvent);
+
+    // Success message
+    Alert.alert('Event Created', `"${title}" created successfully!`);
+
+    // Form reset kiya
     setTitle('');
     setDate('');
     setLocation('');
@@ -35,11 +61,14 @@ export default function CreateEventScreen() {
   };
 
   return (
+    // Background gradient
     <LinearGradient colors={['#0f0c29', '#302b63', '#24243e']} style={styles.container}>
+      {/* Keyboard adjust karne ke liye */}
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.content}>
           <Text style={styles.heading}>📅 Create New Event</Text>
 
+          {/* Input fields */}
           <TextInput
             style={styles.input}
             placeholder="Event Title"
@@ -47,7 +76,6 @@ export default function CreateEventScreen() {
             value={title}
             onChangeText={setTitle}
           />
-
           <TextInput
             style={styles.input}
             placeholder="Date (YYYY-MM-DD)"
@@ -55,7 +83,6 @@ export default function CreateEventScreen() {
             value={date}
             onChangeText={setDate}
           />
-
           <TextInput
             style={styles.input}
             placeholder="Location"
@@ -63,7 +90,6 @@ export default function CreateEventScreen() {
             value={location}
             onChangeText={setLocation}
           />
-
           <TextInput
             style={[styles.input, { height: 100 }]}
             placeholder="Event Description"
@@ -73,6 +99,7 @@ export default function CreateEventScreen() {
             onChangeText={setDescription}
           />
 
+          {/* Submit button */}
           <TouchableOpacity style={styles.button} onPress={handleCreate}>
             <Text style={styles.buttonText}>Create Event</Text>
           </TouchableOpacity>
@@ -82,6 +109,7 @@ export default function CreateEventScreen() {
   );
 }
 
+// Styling
 const styles = StyleSheet.create({
   container: {
     flex: 1,

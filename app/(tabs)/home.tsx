@@ -1,14 +1,26 @@
-// app/home.tsx
-import React from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
 
-// 15 Events with sample data
-const events = [
+// React aur zaroori cheezein import kar rahe hain
+import React, { useContext } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
+// Gradient background ke liye LinearGradient import
+import { LinearGradient } from 'expo-linear-gradient';
+// Routing ke liye useRouter hook
+import { useRouter } from 'expo-router';
+// Apne context ko import kar rahe hain jisme user ne jo events create kiye hain wo honge
+import { CreatedEventContext } from '../../context/CreatedEventContext';
+
+// Static events jo app launch hone par default dikhaye jate hain
+const staticEvents = [
   { id: 1, title: 'Do something nice for someone you care about', date: '2025-07-01', location: 'Lahore Expo Center', image: require('../../assets/images/event1.jpg') },
   { id: 2, title: 'Memorize a Poem', date: '2025-07-02', location: 'UCP Auditorium', image: require('../../assets/images/event2.jpg') },
-  { id: 3, title: 'Watch a Classic Movie', date: '2025-07-03', location: 'CineStar Gulberg', image: require('../../assets/images/event3.jpg') },
+   { id: 3, title: 'Watch a Classic Movie', date: '2025-07-03', location: 'CineStar Gulberg', image: require('../../assets/images/event3.jpg') },
   { id: 4, title: 'Watch a Documentary', date: '2025-07-04', location: 'Documentary Club', image: require('../../assets/images/event4.jpg') },
   { id: 5, title: 'Invest in Cryptocurrency', date: '2025-07-05', location: 'NEST I/O Karachi', image: require('../../assets/images/event5.jpg') },
   { id: 6, title: 'Contribute to Open-Source', date: '2025-07-06', location: 'Tech Hub Islamabad', image: require('../../assets/images/event6.jpg') },
@@ -24,42 +36,60 @@ const events = [
 ];
 
 export default function HomeScreen() {
-  const router = useRouter();
+  const router = useRouter(); // Navigation ke liye useRouter
+  const { createdEvents } = useContext(CreatedEventContext); // Context se user ke banaye huye events mil rahe hain
 
+  // Dono static aur created events ko mila kar ek list bana rahe hain
+  const allEvents = [
+    ...createdEvents.map((event) => ({
+      ...event,
+      image: require('../../assets/images/event1.jpg'), // Placeholder image har user-created event ke liye
+    })),
+    ...staticEvents, // Static events ko bhi list mein daal rahe hain
+  ];
+
+  // Har event card ka design yahan ban raha hai
   const renderEvent = ({ item }: any) => (
     <TouchableOpacity
-      style={styles.card}
-      onPress={() => router.push({ pathname: '/event-details', params: { id: item.id } })}
+      style={styles.card} // Card ka style
+      onPress={() =>
+        // Jab user kisi card pe click kare to event-details screen pe le jao
+        router.push({ pathname: '/event-details', params: { id: item.id } })
+      }
     >
-      <Image source={item.image} style={styles.image} />
-      <View style={styles.textContainer}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.meta}>{item.date}</Text>
-        <Text style={styles.meta}>{item.location}</Text>
+      <Image source={item.image} style={styles.image} /> {/* Event ki image */}
+      <View style={styles.textContainer}> {/* Texts ka section */}
+        <Text style={styles.title}>{item.title}</Text> {/* Event ka title */}
+        <Text style={styles.meta}>{item.date}</Text> {/* Event ki date */}
+        <Text style={styles.meta}>{item.location}</Text> {/* Event ka location */}
       </View>
     </TouchableOpacity>
   );
 
+  // Main return jahan layout show ho raha hai
   return (
     <LinearGradient
-     colors={['#0f0c29', '#302b63', '#24243e']}
-      style={styles.container}
+      colors={['#0f0c29', '#302b63', '#24243e']} // Background ka gradient color
+      style={styles.container} // Overall container style
     >
-      <Text style={styles.header}>Upcoming Events</Text>
+      <Text style={styles.header}>Upcoming Events</Text> {/* Heading text */}
       <FlatList
-        data={events}
-        renderItem={renderEvent}
-        keyExtractor={item => item.id.toString()}
-        contentContainerStyle={styles.list}
-        showsVerticalScrollIndicator={false}
+        data={allEvents} // Jo events render karne hain
+        renderItem={renderEvent} // Har event ka component
+        keyExtractor={(item) => item.id.toString()} // Unique key har event ke liye
+        contentContainerStyle={styles.list} // List ka style
+        showsVerticalScrollIndicator={false} // Scroll bar chhupa do
       />
     </LinearGradient>
   );
 }
 
+// Saare styles yahan defined hain
 const styles = StyleSheet.create({
   container: {
-    flex: 1, paddingTop: 60, paddingHorizontal: 16,
+    flex: 1,
+    paddingTop: 60,
+    paddingHorizontal: 16,
   },
   header: {
     fontSize: 24,

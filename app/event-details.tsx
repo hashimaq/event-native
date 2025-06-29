@@ -1,11 +1,18 @@
-// app/event-details.tsx
+
+// React aur context use karne ke liye import
 import React, { useContext } from 'react';
+// RN ke built-in components import
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, ScrollView } from 'react-native';
+// URL se params lene ke liye aur navigation ke liye
 import { useLocalSearchParams, useRouter } from 'expo-router';
+// Background gradient ke liye
 import { LinearGradient } from 'expo-linear-gradient';
+// RegisteredEventContext se context import kar rahe hain
 import { RegisteredEventContext } from '../context/RegisteredEventContext';
 
-const allEvents = [
+// Static events list jisme 15 dummy events hain — yeh home screen aur details dono me use ho rahe hain
+const allEvents = [ /* 
+  //1 se 15 tak array me events defined hain */
   {
     id: 1,
     title: 'Do something nice for someone you care about',
@@ -126,31 +133,43 @@ const allEvents = [
     description: 'Get inspired and shop for a new decoration piece to upgrade your living space.',
     image: require('../assets/images/event15.jpg'),
   },
-];
+
+
+ ];
 
 export default function EventDetailsScreen() {
+  // useLocalSearchParams() se URL ka id parameter nikaal rahe hain
   const { id } = useLocalSearchParams();
+  // useRouter se navigation ke liye router milta hai
   const router = useRouter();
+  // registerEvent function context se le rahe hain
   const { registerEvent } = useContext(RegisteredEventContext);
 
+  // events array me se id match kar ke exact event nikaal rahe hain
   const event = allEvents.find(e => e.id === Number(id));
 
+  // Agar event na mile to fallback message dikhate hain
   if (!event) return <Text style={{ color: 'white', padding: 20 }}>Event not found.</Text>;
 
+  // Register button pe click karne se yeh function chalega
   const handleRegister = () => {
-    registerEvent(event);
-    Alert.alert('Registered', `You have registered for "${event.title}"`);
-    router.push('/qr-code');
+    registerEvent(event); // Event ko registeredEvents me add karta hai
+    Alert.alert('Registered', `You have registered for "${event.title}"`); // Success alert
+    router.push('/qr-code'); // QR page pe navigate karta hai
   };
 
+  // Screen ka main UI
   return (
     <LinearGradient colors={['#0f0c29', '#302b63', '#24243e']} style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
+        {/* Event ki image dikhate hain */}
         <Image source={event.image} style={styles.image} />
+        {/* Title, date, location, aur description show */}
         <Text style={styles.title}>{event.title}</Text>
         <Text style={styles.meta}>📅 {event.date}</Text>
         <Text style={styles.meta}>📍 {event.location}</Text>
         <Text style={styles.description}>{event.description}</Text>
+        {/* Register button */}
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
           <Text style={styles.buttonText}>Register for Event</Text>
         </TouchableOpacity>
@@ -159,24 +178,38 @@ export default function EventDetailsScreen() {
   );
 }
 
+// Sab components ke liye styling yahan hai
 const styles = StyleSheet.create({
   container: {
-    flex: 1, paddingTop: 50,
+    flex: 1,
+    paddingTop: 50, // Screen ke top se thoda gap
   },
   content: {
-    paddingHorizontal: 20, paddingBottom: 40,
+    paddingHorizontal: 20,
+    paddingBottom: 40,
   },
   image: {
-    width: '100%', height: 220, borderRadius: 16, marginBottom: 20,
+    width: '100%',
+    height: 220,
+    borderRadius: 16,
+    marginBottom: 20,
   },
   title: {
-    fontSize: 24, color: '#FFA726', fontWeight: 'bold', marginBottom: 8,
+    fontSize: 24,
+    color: '#FFA726',
+    fontWeight: 'bold',
+    marginBottom: 8,
   },
   meta: {
-    fontSize: 14, color: '#B0BEC5', marginBottom: 4,
+    fontSize: 14,
+    color: '#B0BEC5',
+    marginBottom: 4,
   },
   description: {
-    fontSize: 15, color: '#E0E0E0', marginTop: 10, marginBottom: 30,
+    fontSize: 15,
+    color: '#E0E0E0',
+    marginTop: 10,
+    marginBottom: 30,
   },
   button: {
     backgroundColor: '#FFA726',
@@ -185,6 +218,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: '#2C5364', fontWeight: 'bold', fontSize: 16,
+    color: '#2C5364',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });

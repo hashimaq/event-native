@@ -1,15 +1,19 @@
-// app/qr-code.tsx
+// React aur zaroori hooks import kiye
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { RegisteredEventContext } from '../context/RegisteredEventContext';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { RegisteredEventContext } from '../context/RegisteredEventContext'; // context jahan registered events hain
+import { LinearGradient } from 'expo-linear-gradient'; // background ke liye gradient
+import { useRouter } from 'expo-router'; // navigation ke liye router
+import QRCode from 'react-native-qrcode-svg'; // QR code component import kiya
 
 export default function QRCodeScreen() {
-  const { registeredEvents } = useContext(RegisteredEventContext);
-  const router = useRouter();
+  const { registeredEvents } = useContext(RegisteredEventContext); // registered events ko context se liya
+  const router = useRouter(); // router use kiya navigation ke liye
+
+  // sab se last registered event ko uthaya
   const latestEvent = registeredEvents[registeredEvents.length - 1];
 
+  // agar koi event registered nahi hai to yeh message show hoga
   if (!latestEvent) {
     return (
       <LinearGradient colors={['#0f0c29', '#302b63', '#24243e']} style={styles.container}>
@@ -18,23 +22,35 @@ export default function QRCodeScreen() {
     );
   }
 
+  // QR code ka value ek string banayi jo event ki details contain karti hai
+  const qrValue = JSON.stringify({
+    event: latestEvent.title,
+    date: latestEvent.date,
+    location: latestEvent.location,
+    id: latestEvent.id,
+  });
+
+  // agar event mila to ye screen show hogi
   return (
     <LinearGradient colors={['#0f0c29', '#302b63', '#24243e']} style={styles.container}>
-      <Text style={styles.heading}>🎫 Your QR Code</Text>
-      <Text style={styles.eventName}>{latestEvent.title}</Text>
-      <Text style={styles.subText}>Show this QR at the event gate</Text>
+      <Text style={styles.heading}>🎫 Your QR Code</Text> {/* heading */}
+      <Text style={styles.eventName}>{latestEvent.title}</Text> {/* event ka naam */}
+      <Text style={styles.subText}>Show this QR at the event gate</Text> {/* instruction */}
 
-      <Image
-        source={require('../assets/images/qr.png')}
-        style={styles.qr}
-        resizeMode="contain"
+      {/* QRCode component jo dynamic value show karta hai */}
+      <QRCode
+        value={qrValue} // value ke andar event ki detail
+        size={250} // size of QR
+        backgroundColor="#FFFFFF" // background white rakha
       />
 
+      {/* event ki date aur location */}
       <View style={styles.details}>
         <Text style={styles.meta}>📅 {latestEvent.date}</Text>
         <Text style={styles.meta}>📍 {latestEvent.location}</Text>
       </View>
 
+      {/* button jise click karne par my bookings pe le jata hai */}
       <TouchableOpacity style={styles.button} onPress={() => router.push('/my-bookings')}>
         <Text style={styles.buttonText}>Go to My Bookings</Text>
       </TouchableOpacity>
@@ -42,6 +58,7 @@ export default function QRCodeScreen() {
   );
 }
 
+// styling ke tamam styles yahan define kiye gaye hain
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -66,16 +83,9 @@ const styles = StyleSheet.create({
     color: '#B0BEC5',
     marginBottom: 30,
   },
-  qr: {
-    width: 250,
-    height: 250,
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 20,
-    marginBottom: 30,
-  },
   details: {
     alignItems: 'center',
+    marginTop: 20,
   },
   meta: {
     fontSize: 15,
